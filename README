@@ -1,0 +1,11 @@
+PYTHON TTS WITH FLASK
+... Using gTTS API
+
+./build-container.sh builds the docker container
+./run-container.sh   runs the docker container
+
+Inside the container runs a python3 Flask Server which understands the command
+/tts/<text>
+or
+/tts/<lang>/<text>
+The server will return with an mp3 file of the text
