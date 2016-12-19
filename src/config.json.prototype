@@ -4,5 +4,5 @@
         "port": 5000,
         "public_port": 5000,
         "max_string_size": 42,
-        "history_enabled": True
+        "history_enabled": "enabled"
 }
