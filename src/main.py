@@ -3,32 +3,32 @@
 from flask import Flask, abort, redirect, url_for, Response, jsonify, send_file
 from gtts import gTTS
 from lib.Config import Config
+from lib.KeyValueStore import KeyValueStore as KVS
 
 import uuid, hashlib, os, urllib
 
 app = Flask(__name__)
 cfg = Config(os.path.dirname(__file__)+'/config.json')
 
-history = []
+history = KVS()
 
-def add_to_history(lang, text):
-    content_hash = str(hashlib.md5(lang.encode()+text.encode()).hexdigest())
-    link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+text+"</a></div>"
-    if link not in history:
-        history.append(link)
+def add_to_history(hash, file_name, lang, text):
+    history.add_key(hash, file_name)
+    history.add_attribute(hash, "lang", lang)
+    history.add_attribute(hash, "text", text)
+    
+    link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+lang+" - " +text+"</a></div>"
     
 
-def tts (lang, text):
-    id = str(uuid.uuid4())
-    content_hash = str(hashlib.md5(lang.encode()+text.encode()).hexdigest())
-    text = text.replace('+', ' ')
-    print ("\nLang: %s\nText: %s" % (lang, text))
-    print ("hash %s" % content_hash)
+def tts (lang, text): 
+    text = text.replace('+', ' ')   
     tts = gTTS(text, lang=lang)
+    
+    content_hash = str(hashlib.md5(lang.encode()+text.encode()).hexdigest())
     file_name = '/tmp/mp3/'+content_hash+'.mp3'
-    print ("File: %s" % file_name)
+    
     tts.save(file_name)
-    add_to_history(lang, text)
+    add_to_history(content_hash, file_name, lang, text)
     return send_file(file_name)
 
 @app.route("/tts/<text>", methods=["GET"])
@@ -43,12 +43,15 @@ def get_tts(lang, text):
 def get_history():
     if cfg.history_enabled != 'enabled':
         abort(404)
+    
     payload = '<div class="links">'
-    for link in history:
-        payload += link
+    for item in history.store:
+        lang = history.get_attribute(item, 'lang')
+        text = history.get_attribute(item, 'text')        
+        payload += '<div class="link">'
+        payload += '<a href="'+cfg.server_host+':'+str(cfg.public_port)+'/tts/'+lang+'/'+text+'">'+lang+' - '+text
+        payload += '</a></div>'
     payload += "</div>"
-    print (history)
-    print (payload)
     return payload
 
 if __name__ == '__main__':
