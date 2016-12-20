@@ -1,6 +1,9 @@
 PYTHON TTS WITH FLASK
 ... Using gTTS API
 
+Config (/src/config)
+set your host and enabled or disable the history
+
 ./build-container.sh builds the docker container
 ./run-container.sh   runs the docker container
 
