@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from flask import Flask, abort, redirect, url_for, Response, jsonify, send_file
+from flask import Flask, abort, send_file
 from gtts import gTTS
 from lib.Config import Config
 from lib.KeyValueStore import KeyValueStore as KVS
 
-import uuid, hashlib, os, urllib
+import hashlib, os, urllib
 
 app = Flask(__name__)
 cfg = Config(os.path.dirname(__file__)+'/config.json')
@@ -18,12 +18,12 @@ def initialize():
         os.makedirs(FILE_ROOT)      
         
 
-def add_to_history(hash, file_name, lang, text):
-    history.add_key(hash, file_name)
-    history.add_attribute(hash, "lang", lang)
-    history.add_attribute(hash, "text", text)
+def add_to_history(text_hash, file_name, lang, text):
+    history.add_key(text_hash, file_name)
+    history.add_attribute(text_hash, "lang", lang)
+    history.add_attribute(text_hash, "text", text)
     
-    link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+lang+" - " +text+"</a></div>"   
+    #link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+lang+" - " +text+"</a></div>"   
 
 def tts (lang, text): 
     text = text.replace('+', ' ')   
