@@ -1,7 +1,7 @@
-FROM python:3.4.3
+FROM python:latest
 
-RUN pip install --upgrade pip && \
-    pip install gTTS flask && \
+RUN pip3 install --upgrade pip && \
+    pip3 install gTTS flask && \
     echo "DONE"
 
 ADD src/ /tts/
