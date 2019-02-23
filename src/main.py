@@ -9,23 +9,28 @@ import uuid, hashlib, os, urllib
 
 app = Flask(__name__)
 cfg = Config(os.path.dirname(__file__)+'/config.json')
-
 history = KVS()
+FILE_ROOT = os.path.dirname(__file__)+'/mp3_files/'
+
+def initialize():
+    if not os.path.isdir(FILE_ROOT):
+        print ("created dir: {}".format(FILE_ROOT))
+        os.makedirs(FILE_ROOT)      
+        
 
 def add_to_history(hash, file_name, lang, text):
     history.add_key(hash, file_name)
     history.add_attribute(hash, "lang", lang)
     history.add_attribute(hash, "text", text)
     
-    link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+lang+" - " +text+"</a></div>"
-    
+    link = '<div class="link"><a href='+cfg.server_host+":"+str(cfg.public_port)+"/tts/"+lang+"/"+urllib.parse.quote(text)+">"+lang+" - " +text+"</a></div>"   
 
 def tts (lang, text): 
     text = text.replace('+', ' ')   
     tts = gTTS(text, lang=lang)
     
     content_hash = str(hashlib.md5(lang.encode()+text.encode()).hexdigest())
-    file_name = '/tmp/mp3/'+content_hash+'.mp3'
+    file_name = FILE_ROOT+content_hash+'.mp3'
     
     tts.save(file_name)
     add_to_history(content_hash, file_name, lang, text)
@@ -55,4 +60,5 @@ def get_history():
     return payload
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=int(cfg.port))
+    initialize()
+    app.run(host='0.0.0.0', debug=False, port=int(cfg.port))
