@@ -1,7 +1,10 @@
 FROM python:latest
 
-RUN pip3 install --upgrade pip && \
-    pip3 install gTTS flask && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install ffmpeg -y && \
+    pip3 install --upgrade pip && \
+    pip3 install gTTS flask pydub && \
     echo "DONE"
 
 ADD src/ /tts/
