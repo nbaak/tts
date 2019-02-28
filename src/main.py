@@ -45,7 +45,7 @@ def tts (file_format, lang, text):
         #sound.export(new_file_name, format="wmv", bitrate="128k")
         new_file_name = FILE_ROOT+content_hash+'.'+file_format
         #https://superuser.com/questions/675342/convert-mp3-to-wav-using-ffmpeg-for-vbr
-        command = str("ffmpeg -y -i " + file_name + new_file_name)
+        command = str("ffmpeg -y -i " + file_name + " " + new_file_name)
         os.system(command)
         
         file_name = new_file_name
