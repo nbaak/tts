@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, abort, send_file, Response
+from flask import Flask, abort, send_file
 from gtts import gTTS
 from pydub import AudioSegment
 from pydub.utils import which
@@ -31,7 +31,7 @@ def tts (file_format, lang, text):
     text = text.replace('+', ' ')   
     tts = gTTS(text, lang=lang)
     
-    content_hash = str(hashlib.md5(file_format.encode()+lang.encode()+text.encode()).hexdigest())
+    content_hash = str(hashlib.md5(lang.encode()+text.encode()).hexdigest())
     file_name = FILE_ROOT+content_hash+'.mp3'
     
     tts.save(file_name)
@@ -46,9 +46,17 @@ def tts (file_format, lang, text):
         new_file_name = FILE_ROOT+content_hash+'.'+file_format
         #https://superuser.com/questions/675342/convert-mp3-to-wav-using-ffmpeg-for-vbr
         command = str("ffmpeg -y -i " + file_name + " " + new_file_name)
-        os.system(command)
-        
+        os.system(command)        
         file_name = new_file_name
+        
+    elif file_format == "wav":
+        new_file_name = FILE_ROOT+content_hash+'.'+file_format
+        command = str("ffmpeg -y -i " + file_name + " " + new_file_name)
+        os.system(command)
+        file_name = new_file_name
+        
+    elif file_format == "mp3":
+        pass
     
     print ("sending: "+file_name)
     return send_file(file_name)
@@ -61,13 +69,9 @@ def get_tts_slim(text):
 def get_tts(lang, text):
     return tts(cfg.default_format, lang, text)
 
-@app.route("/tts/mp3/<lang>/<text>", methods=['GET'])
-def get_tts_mp3(lang, text):
-    return tts("mp3", lang, text)
-
-@app.route("/tts/wmv/<lang>/<text>", methods=['GET'])
-def get_tts_wmv(lang, text):
-    return tts("wmv", lang, text)
+@app.route("/tts/<format>/<lang>/<text>", methods=['GET'])
+def get_tts_format(format, lang, text):
+    return tts(format, lang, text)
 
 @app.route("/history", methods=["GET"])
 def get_history():
