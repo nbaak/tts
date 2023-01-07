@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker rm -f tts_webservice
+docker rm -f tts
 docker run -p 5000:5000 \
-    --name=tts_webservice \
+    --name=tts \
     -d k3nny/tts
