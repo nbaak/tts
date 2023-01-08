@@ -1,12 +1,19 @@
-PYTHON TTS WITH FLASK
+# PYTHON TTS WITH FLASK
 ... Using gTTS API
 
-Config (/src/config)
+## Config (./src/config.py)
 set your host and enabled or disable the history
 
-./build-container.sh builds the docker container
-./run-container.sh   runs the docker container
 
+## deployment
+`docker-compose build` building the image
+
+`docker-compuse up -d` start the contaier
+
+`docker-compose down -v` if you want to shut down the service
+
+
+## usage
 Inside the container runs a python3 Flask Server which understands the command
 /tts/<text>
 or

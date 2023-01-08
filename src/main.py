@@ -26,6 +26,9 @@ def add_to_history(text_hash, file_name, lang, text):
 
 
 def tts(file_format, lang, text):
+    if cfg.max_string_size > 0 and len(text) > cfg.max_string_size:
+        return "text_too_long"
+
     text = text.replace('+', ' ')
     tts = gTTS(text, lang=lang)
 
@@ -33,9 +36,8 @@ def tts(file_format, lang, text):
     file_name = f"{FILE_ROOT}{content_hash}.{file_format}"
 
     if not os.path.exists(file_name):
-        tts.save(file_name)  # always saves mp3
-        print("################################ write new file")
-    
+        tts.save(file_name)
+
     if cfg.history_enabled:
         add_to_history(content_hash, file_name, lang, text)
 
